@@ -10,6 +10,7 @@ Rules (from the architecture spec):
 """
 
 import logging
+import time
 
 from .models import TranscribeOptions, TranscriptResult
 from .ports import CorrectionPort, TranscriptionPort
@@ -47,6 +48,7 @@ class TranscribeService:
         if not should_correct:
             return result
 
+        started = time.perf_counter()
         try:
             corrected = await self._corrector.correct(
                 raw, options.vocabulary, options.language
@@ -56,5 +58,9 @@ class TranscribeService:
                 result.corrected_text = corrected
         except Exception:  # noqa: BLE001 — correction must never block
             logger.warning("Correction pass failed — returning raw text", exc_info=True)
+        finally:
+            result.correction_latency_ms = int(
+                (time.perf_counter() - started) * 1000
+            )
 
         return result
