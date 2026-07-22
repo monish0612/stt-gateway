@@ -4,7 +4,9 @@ services:
     container_name: stt-gateway
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      # Host port is configurable — 8080 was already taken on the VPS.
+      # The container always listens on 8080 internally.
+      - "${STT_GATEWAY_PORT:-8090}:8080"
     environment:
       - GROQ_API_KEY=${GROQ_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
@@ -15,6 +17,10 @@ services:
       - LOCAL_WHISPER_ENABLED=${LOCAL_WHISPER_ENABLED:-false}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - DAILY_REQUEST_LIMIT=${DAILY_REQUEST_LIMIT:-2000}
+      # Model names are plain env vars — upgrade providers without a code
+      # change or image rebuild; just edit these and restart.
+      - GROQ_MODEL=${GROQ_MODEL:-whisper-large-v3-turbo}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash-lite}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/healthz', timeout=5)"]
       interval: 30s

@@ -72,8 +72,12 @@ curl -F "file=@test.m4a" -H "X-Client-Key: YOUR_ANDROID_KEY" \
 3. Set env vars from `.env.example` — `GROQ_API_KEY` and `GEMINI_API_KEY`
    can reuse the same values already configured for the ainexus stack;
    generate a long random value for the `android:` entry in `CLIENT_KEYS`.
-4. Map port `8080` (the app expects `http://<vps-ip>:8080` by default,
-   overridable in Flutter with `--dart-define=STT_GATEWAY_URL=...`).
+   Provider models are env-driven too: `GROQ_MODEL` / `GEMINI_MODEL` —
+   upgrade models by editing the env var and restarting, no rebuild needed.
+4. The service is published on host port `${STT_GATEWAY_PORT:-8090}`
+   (container listens on 8080 internally). The app expects
+   `http://<vps-ip>:8090` by default, overridable in Flutter with
+   `--dart-define=STT_GATEWAY_URL=...`.
 5. Memory limit 512 MB is plenty (bump only if local whisper is enabled later).
 
 ## Flutter client
