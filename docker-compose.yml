@@ -1,0 +1,26 @@
+services:
+  stt-gateway:
+    build: .
+    container_name: stt-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - CLIENT_KEYS=${CLIENT_KEYS}
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
+      - MAX_UPLOAD_MB=${MAX_UPLOAD_MB:-15}
+      - CORRECTION_ENABLED=${CORRECTION_ENABLED:-true}
+      - LOCAL_WHISPER_ENABLED=${LOCAL_WHISPER_ENABLED:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - DAILY_REQUEST_LIMIT=${DAILY_REQUEST_LIMIT:-2000}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/healthz', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
