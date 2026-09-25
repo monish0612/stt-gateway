@@ -7,6 +7,7 @@ maps to an entry in ``CLIENT_KEYS``.
 
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -37,6 +38,24 @@ class Settings(BaseSettings):
     # ── Provider tunables ───────────────────────────────────────────────
     groq_model: str = "whisper-large-v3-turbo"
     gemini_model: str = "gemini-2.5-flash-lite"
+
+    @model_validator(mode="after")
+    def _require_provider_keys(self) -> "Settings":
+        missing = [
+            name
+            for name, value in (
+                ("GROQ_API_KEY", self.groq_api_key),
+                ("GEMINI_API_KEY", self.gemini_api_key),
+            )
+            if not str(value or "").strip()
+        ]
+        if missing:
+            raise ValueError(
+                "stt-gateway refuses to start; missing "
+                + ", ".join(missing)
+                + ". Set the Coolify team variable and redeploy."
+            )
+        return self
 
     @property
     def client_key_map(self) -> dict[str, str]:

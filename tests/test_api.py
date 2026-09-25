@@ -1,5 +1,11 @@
 """API-level tests: auth, validation, provider-failure mapping."""
 
+import os
+
+os.environ.setdefault("GROQ_API_KEY", "unused")
+os.environ.setdefault("GEMINI_API_KEY", "test-gemini-key")
+os.environ.setdefault("CLIENT_KEYS", "android:testkey123")
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -31,7 +37,7 @@ class FakeCorrector(CorrectionPort):
 def client(monkeypatch):
     monkeypatch.setenv("CLIENT_KEYS", "android:testkey123")
     monkeypatch.setenv("GROQ_API_KEY", "unused")
-    monkeypatch.setenv("GEMINI_API_KEY", "")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
     monkeypatch.setenv("MAX_UPLOAD_MB", "1")
     get_settings.cache_clear()
 

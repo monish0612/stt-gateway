@@ -2,7 +2,7 @@
 
 Uses Gemini Flash-Lite (temperature 0) to fix homophones, punctuation,
 casing and mis-heard words WITHOUT paraphrasing. Latency-sensitive: hard
-4s timeout, and any failure is surfaced as an exception which the
+6s timeout, and any failure is surfaced as an exception which the
 orchestrator converts into a graceful raw-text fallback.
 """
 
@@ -16,7 +16,7 @@ from ..core.ports import CorrectionPort
 
 logger = logging.getLogger("stt-gateway.gemini")
 
-CORRECTION_TIMEOUT_S = 4.0
+CORRECTION_TIMEOUT_S = 6.0
 
 SYSTEM_PROMPT = (
     "You fix speech-to-text transcription errors. Correct homophones, "
